@@ -43,7 +43,7 @@ app.get('/collection/:collectionName', (req, res, next)=>{
     });
 });
 
-/*
+
 // returns images from the static folder named 'static'
 app.use((req, res, next)=>{
     const filePath = path.join(__dirname, 'static', req.url); 
@@ -60,5 +60,5 @@ app.use((req, res, next)=>{
         }
     });
 });
-*/
+
 
