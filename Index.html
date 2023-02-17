@@ -271,7 +271,7 @@
         },
         created() {
           // fetch lessons from the backend
-          fetch('http://localhost:3000/collection/lessons')
+          fetch('https://cw2-individual.herokuapp.com/collection/lessons')
             .then(response => response.json())
             .then(data => (this.products = data));
         }
