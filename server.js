@@ -40,7 +40,7 @@ app.get('/collection/:collectionName', (req, res, next)=>{
 
 
 
-app.listen(3000,()=>{
+app.listen(process.env.PORT || 3000,()=>{
     console.log('Express.js server is running at localhost:3000')
 
 });
