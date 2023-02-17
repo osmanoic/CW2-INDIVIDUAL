@@ -30,19 +30,17 @@ app.use((req, res, next)=>{
     return next();
 });
 
+app.listen(process.env.PORT || 3000,()=>{
+    console.log('Express.js server is running at localhost:3000')
+
+});
+
 // get route that returns lessons
 app.get('/collection/:collectionName', (req, res, next)=>{
     req.collection.find({}).toArray((e, results) => {
         if (e) return next();
         res.send(results);
     });
-});
-
-
-
-app.listen(process.env.PORT || 3000,()=>{
-    console.log('Express.js server is running at localhost:3000')
-
 });
 
 // returns images from the static folder named 'static'
