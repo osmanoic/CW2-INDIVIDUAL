@@ -1,0 +1,285 @@
+<html>
+
+<head>
+    <title>Subjects Availability</title>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+
+
+<body>
+    <div id="app">
+        <header>
+            <h1 v-text="sitename"></h1>
+            
+
+            <div id="sort-bar">
+                <select name="sortBy" id="select" v-model="sortBy">
+                  <option value="subject" > Subject</option>
+                  <option value="location"> Location</option>
+                  <option value="price"> Price</option>
+                  <option value="Availability"> Availability</option>
+                </select>
+                <button v-on:click="ascending = !ascending" class="sort-button">
+                    <i v-if="ascending" class="fa fa-sort-up"></i>
+                    <i v-else class="fa fa-sort-down"></i>
+                  </button>
+
+           
+           
+           
+                  <input type="text" v-model="searchValue" placeholder="Search Title..." id="search-input"></input>
+
+                 <i class="fa fa-search"></i>
+
+            
+
+              
+
+           
+
+            
+                  <!-- run javascript code when they are triggered for example click -->
+            <button v-on:click='showCheckout':disabled="checkoutVal">
+                {{cartItemCount}}
+                <span class="fas fa-cart-plus"></span> Checkout
+            </button>
+
+            
+         
+             
+        </header> 
+        <main>
+            <div v-if='showProduct'>
+
+                <!-- //We can use the v-for directive to render a list of items based on an array. (subjects.js file)  -->
+                <div v-for="product in sortedProducts">
+                    <h2 v-text="product.title"></h2>
+                    <figure>
+
+                        <!-- v-bind used to bind one or more attributes, or a component property to an element -->
+                        <img v-bind:src="product.image" width="200" height="150">
+                    </figure>
+                  <b><p>Subject:</b>{{product.subject}}</p>
+                  <b><p>Location:</b>{{product.location}}</p>
+                  <b><p>Price: </b>{{product.price}}</p>
+                  <b><p>Availability:</b>{{product.availableInventory - cartCount(product.id) }}</p>
+                 
+                  <button v-on:click='addToCart(product)' v-if='canAddToCart(product)'>Add to cart</button>
+                    <button disabled="disabled" v-else>Add to cart</button> 
+
+
+                        <!-- v - if is used to conditionally render a process -->
+                    <span v-if='product.availableInventory === cartCount(product.id)'>No Seats Available</span>
+                    <span v-else-if="product.availableInventory - cartCount(product.id) < 5">
+                        {{product.availableInventory - cartCount(product.id)}} Spots left!
+                    </span>
+                    <span v-else>Enroll Now!</span>
+
+                    
+                </div>
+
+            </div>
+
+          
+
+
+            <div v-else>
+                <h2>Checkout</h2>
+                <p>
+                    <strong>Name:</strong>
+                    <!-- This input field is bound to 'Name' in the 'order' object -->
+                    <input v-model.trim="order.Name" />
+                </p>
+                
+               
+                <p>
+                    <strong>Phone:</strong>
+                    <input v-model.number="order.Phone" type="number" />
+                </p>
+                
+                <h3>Order Information</h3>
+                <p>Name: {{order.Name}}</p>
+                <p>Phone: {{order.Phone}}</p>
+               
+
+                <button v-on:click="submitForm">Place Order</button>
+        
+                
+            </div>
+        </main>
+    </div>
+
+    <script type="text/javascript">
+        var webstore = new Vue({
+            el: '#app',
+            data: {
+                sitename: 'Subjects Availability',
+                products: [],
+                showProduct: true,
+                ascending:true,
+                sortBy:'product',
+                searchValue:'',
+               
+    //             products = [
+    // {
+    //                 "id": 1001,
+    //                 "subject":'Math',
+    //                 "location": "London",
+    //                 "price": '£100',
+    //                 "image": "images/math.png",
+    //                 "availableInventory": 5 ,
+               
+                cart: [],
+                
+                order: {
+                    Name: '',  
+                    phone: '',
+                   
+            
+                },
+            },
+
+        //    methods are functions used to perform events
+            methods: {
+                addToCart(product) {
+                    this.cart.push(product.id);
+                    // console.log('adding to cart', product.id)
+                },
+                showCheckout() {
+                    // console.log(this.showProduct);
+                    this.showProduct = this.showProduct ? false : true;
+                },
+                submitForm() {
+                    alert('Order submitted!')
+                },
+                canAddToCart(product) {
+                    return product.availableInventory > this.cartCount(product.id);
+                },
+                cartCount(id) {
+                    let count = 0;
+                    for (let i = 0; i < this.cart.length; i++) {
+                        if (this.cart[i] === id) {
+                            count++;
+                        }
+                    }
+                    return count;
+                }
+            },
+            
+
+
+
+
+             // Computed properties used to calculate and display values based on a value or set of values in the data model.
+            computed: {
+                cartItemCount() {
+                    return this.cart.length;
+                },
+                sortedProducts() {
+                let tempSubjects = this.products
+
+                   if (this.searchValue != '' && this.searchValue) {
+                      tempSubjects = tempSubjects.filter((item) => {
+                         return item.subject
+                          .toUpperCase()
+                          .includes(this.searchValue.toUpperCase())
+               })
+               }
+
+              
+
+                 tempSubjects = tempSubjects.sort((a, b) => {
+            if (this.sortBy == 'subject') {
+                let fa = a.subject.toLowerCase(), fb = b.subject.toLowerCase()
+          
+              if (fa < fb) {
+                return -1
+              }
+              if (fa > fb) {
+                return 1 
+              }
+              return 0
+              
+            }            if (this.sortBy == 'location') {
+                let fa = a.location.toLowerCase(), fb = b.location.toLowerCase()
+          
+              if (fa < fb) {
+                return -1
+              }
+              if (fa > fb) {
+                return 1 
+              }
+              return 0
+              
+            } 
+            
+            if (this.sortBy == 'price') {
+                let fa = a.price.toLowerCase(), fb = b.price.toLowerCase()
+          
+              if (fa < fb) {
+                return -1
+              }
+              if (fa > fb) {
+                return 1 
+              }
+              return 0
+              
+            }            
+             if (this.sortBy == 'availableInventory') {
+                let fa = a.availableInventory.toLowerCase(), fb = b.availableInventory.toLowerCase()
+          
+              if (fa < fb) {
+                return -1
+              }
+              if (fa > fb) {
+                return 1 
+              }
+              return 0
+              
+            } 
+        })
+        if (!this.ascending) {
+        	tempSubjects.reverse()
+        }
+        
+                  {
+                    
+
+                      const value= this.searchValue.charAt(0).toUpperCase() + this.searchValue.slice(1);
+
+                      return this.products.filter(function(subjects){
+
+                        return subjects.subject.indexOf(value) > -1 ||
+
+                         subjects.location.indexOf(value) > -1
+
+                       })
+
+                         }
+        return tempSubjects
+        
+            
+              
+              
+                },
+
+                checkoutVal: function(){
+                    return this.cartItemCount > 0 ? false : true;
+            },
+        },
+        created() {
+          // fetch lessons from the backend
+          fetch('http://localhost:3000/collection/lessons')
+            .then(response => response.json())
+            .then(data => (this.products = data));
+        }
+
+
+      });
+    </script>
+</body>
+
+</html>
+
